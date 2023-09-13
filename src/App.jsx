@@ -7,17 +7,20 @@ import AuthForm from "./components/AuthForm.jsx";
 import 'flowbite';
 import {useEffect, useState} from "react";
 import {supabase} from "./supabase/index.js";
+import Profile from "./components/Profile.jsx";
+import Error from "./components/Error.jsx";
 function App() {
-    const [user,setUser] = useState(false)
+    const [In,setIn] = useState(false)
     useEffect(() => {
         supabase.auth.onAuthStateChange((event, session) => {
             if (session !== null){
-                setUser(true)
+                setIn(true)
             }else {
-                setUser(false)
+                setIn(false)
             }
         })
     }, []);
+    const user = localStorage.getItem("sb-guhrljahuzgrpuvbdiuf-auth-token")
   return (
                 <BrowserRouter>
                     <Navbar/>
@@ -27,12 +30,19 @@ function App() {
                             user && (<Route path='/create' element={<Form/>}/>)
                         }
                         {
+                            user && (<Route path='/edit/:id' element={<Form/>}/>)
+                        }
+                        {
                             !user && <Route path='/signup' element={<AuthForm/>}/>
                         }
                         {
                             !user && <Route path='/login' element={<AuthForm/>}/>
                         }
+                        {
+                            user && <Route path='/profile/:slug'  element={<Profile/>}/>
+                        }
                         <Route path='/detail/:id' element={<Detail/>}/>
+                        <Route path={"*"} element={<Error/>}/>
                     </Routes>
                 </BrowserRouter>
   )
