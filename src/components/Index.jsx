@@ -91,7 +91,7 @@ const Home = () => {
                         </Button>
                     }
                 </section>
-                <section className='w-full mb-5 lg:mb-0 lg:w-[30%]'>
+                <section className='w-full mb-5 lg:mb-0 lg:w-[30%] px-0 md:px-5'>
                     <form onSubmit={handleSubmit}>
                         <label htmlFor="default-search" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
                         <div className="relative">

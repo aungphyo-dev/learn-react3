@@ -4,7 +4,6 @@ import Home from "./components/Index.jsx";
 import Navbar from "./components/Navbar.jsx";
 import Detail from "./components/Detail.jsx";
 import AuthForm from "./components/AuthForm.jsx";
-import 'flowbite';
 import {useEffect, useState} from "react";
 import {supabase} from "./supabase/index.js";
 import Profile from "./components/Profile.jsx";
