@@ -22,7 +22,7 @@ const Detail = () => {
     const [isLoading, setIsLoading] = useState(true)
     const [comment,setComment] = useState("")
     const [commenting,setCommenting] = useState(false)
-    const user = JSON.parse(localStorage.getItem("sb-guhrljahuzgrpuvbdiuf-auth-token")).user.id
+    const user = JSON.parse(localStorage.getItem("sb-guhrljahuzgrpuvbdiuf-auth-token"))?.user.id
     const handleDelete =async (id) => {
         const { error } = await supabase
             .from('comments')
