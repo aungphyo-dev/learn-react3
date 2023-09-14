@@ -17,10 +17,10 @@ const Detail = () => {
     return (
         <section className='w-full min-h-screen flex flex-col justify-start items-start'>
             {
-                !isLoading && <div className="p-5 mx-auto sm:p-10 md:p-16 text-gray-100">
+                !isLoading && <div className="p-0 mx-auto sm:p-10  md:p-16 text-gray-100">
                     <div className="flex flex-col max-w-3xl mx-auto overflow-hidden rounded">
-                        <img src={post.data[0].image} alt="" className="w-full h-60 sm:h-96 bg-gray-500" />
-                        <div className="p-5 md:p-6 pb-12 m-4 mx-auto -mt-16 space-y-6 lg:max-w-2xl sm:px-10 sm:mx-12 lg:rounded-md bg-gray-900">
+                        <img src={post.data[0].image} alt="" className="w-full h-96 bg-gray-500" />
+                        <div className="p-5 md:p-6 pb-12 mx-auto -mt-16 space-y-6 lg:max-w-2xl sm:px-10 sm:mx-12 lg:rounded-md bg-gray-900">
                             <div className="space-y-2">
                                 <a rel="noopener noreferrer" href="#" className="inline-block text-2xl font-semibold sm:text-3xl">{post.data[0].title}</a>
                                 <p className="text-xs text-gray-400">By
