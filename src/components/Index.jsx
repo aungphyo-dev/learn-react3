@@ -1,33 +1,44 @@
 import {supabase} from "../supabase/index.js";
-import {useEffect, useRef, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import Loading from "./Loading.jsx";
 import BlogCard from "./BlogCard.jsx";
 import {useSearchParams} from "react-router-dom";
+import Button from '@mui/material/Button';
 
 const Home = () => {
     const [searchParams, setSearchParams] = useSearchParams({});
+    const [limit,setLimit] = useState(5)
     const [search,setSearch] = useState(false)
     const [posts, setPosts] = useState({})
     const [query,setQuery] = useState("")
     const [isLoading, setIsLoading] = useState(true)
+    const [showL,setShowL] = useState(false)
     const getPost = async () => {
+        setShowL(true)
         const  data  = await supabase
             .from('blogs')
             .select()
+            .limit(limit)
             .ilike('title', `%${query}%`).order('id', {ascending: false})
         setPosts(data)
         setIsLoading(false)
+        setShowL(false)
     }
     const getPostAll = async () => {
+        setShowL(true)
         const  data  = await supabase
             .from('blogs')
             .select()
+            .limit(limit)
             .order('id', {ascending: false})
         setPosts(data)
         setIsLoading(false)
+        setShowL(false)
     }
+    const callerPost = useCallback(getPost,[limit,query])
+    const callerPostAll = useCallback(getPostAll,[limit])
     useEffect(() => {
-        getPost()
+        callerPost()
     }, []);
     useEffect(() => {
         if (query.length === 0){
@@ -37,14 +48,28 @@ const Home = () => {
     const handleSubmit = (e) => {
       e.preventDefault()
         setSearch(true)
-        getPost()
+        callerPost()
     }
     const handleClick = () => {
         setIsLoading(true)
       setSearchParams({})
         setSearch(false)
         setQuery("")
-        getPostAll()
+        callerPostAll()
+    }
+    const handleMore = () => {
+        setLimit(prevState => {
+            if (prevState > 10){
+                return prevState + 3
+            }else {
+                return prevState + 5
+            }
+        })
+      if (search){
+          callerPost()
+      }else {
+          callerPostAll()
+      }
     }
     return (
         <>
@@ -54,8 +79,19 @@ const Home = () => {
                     {!isLoading && posts?.data?.map((post) => (
                         <BlogCard key={post.id} blog={post}/>
                     ))}
+                    {
+                        search ? <Button onClick={handleMore} variant="contained" color="success">
+                                {
+                                    showL ?"Loading.."  : "Show More Filtering Result"
+                                }
+                        </Button> : <Button onClick={handleMore} variant="contained" color="success">
+                            {
+                                showL ?"Loading.."  : "Show More"
+                            }
+                        </Button>
+                    }
                 </section>
-                <section className='w-full mb-5 lg:mb-0 lg:w-[30%] px-5'>
+                <section className='w-full mb-5 lg:mb-0 lg:w-[30%]'>
                     <form onSubmit={handleSubmit}>
                         <label htmlFor="default-search" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
                         <div className="relative">

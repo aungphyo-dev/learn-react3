@@ -3,7 +3,7 @@ import {object} from 'prop-types';
 
 export default function BlogCard({blog}) {
     return (
-        <article className="w-full flex bg-white transition hover:shadow-xl">
+        <article className="w-full flex bg-white hover:shadow-xl">
             <div className="rotate-180 p-2 [writing-mode:_vertical-lr]">
                 <div
                     className="flex items-center justify-between gap-4 text-xs font-bold uppercase text-gray-900"
