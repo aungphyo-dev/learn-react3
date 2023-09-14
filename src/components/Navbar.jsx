@@ -5,7 +5,6 @@ import {useEffect, useState} from "react";
 function Navbar() {
     const [userSlug,setUserSlug] = useState("")
     const [user,setUser] = useState(false)
-    const [userInfo,setUserInfo] = useState({})
     const nav = useNavigate()
     useEffect(() => {
         const getSlug =async () => {
@@ -26,11 +25,10 @@ function Navbar() {
         nav('/')
     }
     return (
-        <nav className="bg-white border-gray-200 dark:bg-gray-900">
+        <nav className="bg-white fixed top-0 left-0 right-0 z-50 border-gray-200 dark:bg-gray-900">
             <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
                 <Link to="/" className="flex items-center">
-                    <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">SPB</span>
-                </Link>
+                    <img width="50" height="50" src="https://img.icons8.com/3d-fluency/94/mac-os.png" alt="mac-os"/>   </Link>
                 <div className="flex items-center md:order-2">
                     <button type="button" className="flex mr-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown" data-dropdown-placement="bottom">
                         <span className="sr-only">Open user menu</span>
@@ -40,7 +38,9 @@ function Navbar() {
                     <div className="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600" id="user-dropdown">
                         {
                             user && <div className="px-4 py-3">
-                                <span className="block text-sm text-gray-900 dark:text-white">Bonnie Green</span>
+                                <span className="block text-sm text-gray-900 dark:text-white">
+                                    Blogger
+                                </span>
                                 <span className="block text-sm  text-gray-500 truncate dark:text-gray-400">
                                         {JSON.parse(localStorage.getItem("sb-guhrljahuzgrpuvbdiuf-auth-token")).user.email}
                                 </span>
@@ -57,7 +57,7 @@ function Navbar() {
                             </li>
                             <li>
                                 <button onClick={handleLogout}
-                                   className="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Sign
+                                   className="block text-start w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Sign
                                     out</button>
                             </li>
                         </ul>}

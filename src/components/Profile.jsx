@@ -24,7 +24,7 @@ const Profile = () => {
         getPost()
     }, []);
     return(
-        <div className="h-full mt-5">
+        <div className="min-h-screen pt-[85px]">
             <div className="border-b-2 block md:flex">
                 <div className="w-full md:w-2/5 p-4 sm:p-6 lg:p-8 bg-white shadow-md">
                     <div className="flex justify-between mb-5">

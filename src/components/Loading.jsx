@@ -1,6 +1,6 @@
 const Loading = () => {
     return(
-        <section className='w-full min-h-screen flex flex-col justify-center items-center p-5 gap-y-5'>
+        <section className='w-full pt-[85px] min-h-screen flex flex-col justify-center items-center p-5 gap-y-5'>
             <div role="status" className="w-full space-y-8 animate-pulse md:space-y-0 md:space-x-8 md:flex md:items-center">
                 <div className="flex items-center justify-center w-full h-48 bg-gray-300 rounded sm:w-96 dark:bg-gray-700">
                     <svg className="w-10 h-10 text-gray-200 dark:text-gray-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">

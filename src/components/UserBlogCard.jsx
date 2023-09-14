@@ -1,6 +1,7 @@
 import {Link} from "react-router-dom";
 import {supabase} from "../supabase/index.js";
 import {useState} from "react";
+import {object} from "prop-types";
 export default function UserBlogCard({blog}) {
     const [loading,setLoading] = useState(false)
     const handleDelete = async () => {
@@ -9,12 +10,10 @@ export default function UserBlogCard({blog}) {
             .from('blogs')
             .delete()
             .eq('id', blog.id)
-        if (blog.image !== "https://images.unsplash.com/photo-1545239351-ef35f43d514b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8YmxvZ3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=500&q=60"){
-            await supabase
-                .storage
-                .from('blogs')
-                .remove([`${blog.image.substr(72)}`])
-        }
+        await supabase
+            .storage
+            .from('blogs')
+            .remove([`${blog.image.substr(72)}`])
         setLoading(false)
     }
     return (
@@ -81,4 +80,7 @@ export default function UserBlogCard({blog}) {
             </div>
         </article>
     );
+}
+UserBlogCard.propTypes = {
+    blog : object
 }

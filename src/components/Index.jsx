@@ -6,6 +6,7 @@ import {useSearchParams} from "react-router-dom";
 
 const Home = () => {
     const [searchParams, setSearchParams] = useSearchParams({});
+    console.log(searchParams)
     const [posts, setPosts] = useState({})
     const [query,setQuery] = useState("")
     const [isLoading, setIsLoading] = useState(true)
@@ -29,7 +30,7 @@ const Home = () => {
     return (
         <>
             {isLoading && <Loading/>}
-            {!isLoading && <div className='flex flex-col-reverse lg:flex-row mt-5 p-5'>
+            {!isLoading && <div className='flex flex-col-reverse lg:flex-row mt-5 p-5 pt-[85px]'>
                 <section className='w-full lg:w-[70%] flex flex-col justify-center items-center gap-y-5'>
                     {!isLoading && posts?.data?.map((post) => (
                         <BlogCard key={post.id} blog={post}/>

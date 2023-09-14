@@ -1,4 +1,5 @@
 import {Link} from "react-router-dom";
+import {object} from 'prop-types';
 
 export default function BlogCard({blog}) {
     return (
@@ -47,4 +48,7 @@ export default function BlogCard({blog}) {
             </div>
         </article>
     );
+}
+BlogCard.propTypes = {
+    blog : object
 }

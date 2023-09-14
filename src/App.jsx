@@ -11,6 +11,7 @@ import Profile from "./components/Profile.jsx";
 import Error from "./components/Error.jsx";
 function App() {
     const [In,setIn] = useState(false)
+    console.log(In)
     useEffect(() => {
         supabase.auth.onAuthStateChange((event, session) => {
             if (session !== null){
