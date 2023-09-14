@@ -13,9 +13,11 @@ const AuthForm = () => {
         e.preventDefault();
         setIsLoading(true)
         if (pathname === "/signup") {
-            const {error} = await supabase.auth.signUp({email: email, password: password});
+            const {error,data} = await supabase.auth.signUp({email: email, password: password});
             setIsLoading(false)
             if (error === null) {
+                const{error} = await supabase.from("user_information").insert([{name:data.user.email.substring(0,5),user_id:data.user.id,email:data.user.email}]).select();
+                console.log(error)
                 nav("/")
             }else {
                 setError(true)

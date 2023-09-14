@@ -17,7 +17,7 @@ const Home = () => {
         setShowL(true)
         const  data  = await supabase
             .from('blogs')
-            .select()
+            .select(`*,user_information(*),categories(*)`)
             .limit(limit)
             .ilike('title', `%${query}%`).order('id', {ascending: false})
         setPosts(data)
@@ -28,7 +28,7 @@ const Home = () => {
         setShowL(true)
         const  data  = await supabase
             .from('blogs')
-            .select()
+            .select(`*,user_information(*),categories(*)`)
             .limit(limit)
             .order('id', {ascending: false})
         setPosts(data)

@@ -17,7 +17,7 @@ export default function UserBlogCard({blog}) {
         setLoading(false)
     }
     return (
-        <article className="w-full flex bg-white transition hover:shadow-xl">
+        <div className="w-full flex bg-white transition hover:shadow-xl">
             <div className="rotate-180 p-2 [writing-mode:_vertical-lr]">
                 <div
                     className="flex items-center justify-between gap-4 text-xs font-bold uppercase text-gray-900"
@@ -78,7 +78,7 @@ export default function UserBlogCard({blog}) {
                     </button>
                 </div>
             </div>
-        </article>
+        </div>
     );
 }
 UserBlogCard.propTypes = {

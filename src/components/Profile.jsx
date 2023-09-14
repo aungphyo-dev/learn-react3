@@ -4,7 +4,7 @@ import {useNavigate, useParams} from "react-router-dom";
 import UserBlogCard from "./UserBlogCard.jsx";
 const Profile = () => {
     const {slug} = useParams()
-    const [email,setEmail] = useState("")
+    const [user,setUser] = useState({})
     const nav = useNavigate()
 
     const blogs = supabase.channel('custom-all-channel')
@@ -25,13 +25,15 @@ const Profile = () => {
         const posts = await supabase.from('blogs').select(`*`).order('id', {ascending: false}).eq("user_id",slug)
         setPosts(posts)
     }
-    useEffect(() => {
-        const get = async () => {
-            const {data} = await supabase.auth.getSession()
-            setEmail(data.session.user.email)
+    const getUser = async () => {
+        const {data,error} = await supabase.from('user_information').select(`*`).order('id', {ascending: false}).eq("user_id",slug)
+        if (error === null){
+            setUser(data[0])
         }
-        get()
+    }
+    useEffect(() => {
         getPost()
+        getUser()
     }, [blogs]);
     return(
         <div className="min-h-screen pt-[85px]">
@@ -48,12 +50,12 @@ const Profile = () => {
                         <div className="pb-6">
                             <label htmlFor="name" className="font-semibold text-gray-700 block pb-1">Name</label>
                             <div className="flex">
-                                <input disabled id="username" className="border-1  rounded-r px-4 py-2 w-full" type="text" value="Blogger" />
+                                <input disabled id="username" className="border-1  rounded-r px-4 py-2 w-full" type="text" value={user.name} />
                             </div>
                         </div>
                         <div className="pb-4">
                             <label htmlFor="about" className="font-semibold text-gray-700 block pb-1">Email</label>
-                            <input disabled id="email" className="border-1  rounded-r px-4 py-2 w-full" type="email" value={email}/>
+                            <input disabled id="email" className="border-1  rounded-r px-4 py-2 w-full" type="email" value={user.email}/>
                             <span className="text-gray-600 pt-4 block opacity-70">Personal login information of your account</span>
                         </div>
                     </div>
