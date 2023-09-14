@@ -6,6 +6,17 @@ import SaveIcon from "@mui/icons-material/Save.js";
 import {Button} from "@mui/material";
 
 const Detail = () => {
+
+    const comments = supabase.channel('custom-all-channel')
+        .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'comments' },
+            (payload) => {
+                console.log('Change received!', payload)
+            }
+        )
+        .subscribe()
+    console.log(comments)
     const {id} = useParams()
     const [post, setPost] = useState({})
     const [isLoading, setIsLoading] = useState(true)
@@ -30,6 +41,7 @@ const Detail = () => {
             ])
             .select()
         setCommenting(false)
+        setComment("")
     }
     const getPost = async () => {
         const {data} = await supabase.from('blogs').select(`*,comments(*)`).eq("id",id)
@@ -38,7 +50,7 @@ const Detail = () => {
     }
     useEffect(() => {
         getPost()
-    }, []);
+    }, [comments]);
     return (
         <section className='w-full min-h-screen flex flex-col'>
             {

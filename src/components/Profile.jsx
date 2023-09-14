@@ -6,6 +6,16 @@ const Profile = () => {
     const {slug} = useParams()
     const [email,setEmail] = useState("")
     const nav = useNavigate()
+
+    const blogs = supabase.channel('custom-all-channel')
+        .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'blogs' },
+            (payload) => {
+                console.log('Change received!', payload)
+            }
+        )
+        .subscribe()
     const handleLogout =async () => {
         await supabase.auth.signOut()
         nav("/")
@@ -22,7 +32,7 @@ const Profile = () => {
         }
         get()
         getPost()
-    }, []);
+    }, [blogs]);
     return(
         <div className="min-h-screen pt-[85px]">
             <div className="border-b-2 block md:flex">
