@@ -19,18 +19,18 @@ export default function UserBlogCard({blog}) {
     return (
         <article className="w-full flex bg-white transition hover:shadow-xl">
             <div className="rotate-180 p-2 [writing-mode:_vertical-lr]">
-                <time
-                    dateTime="2022-10-10"
+                <div
                     className="flex items-center justify-between gap-4 text-xs font-bold uppercase text-gray-900"
                 >
-                    <span>2022</span>
+                    <span>{blog.created_at.substr(0, 4)}</span>
                     <span className="w-px flex-1 bg-gray-900/10"></span>
-                    <span>Oct 10</span>
-                </time>
+                    <span>{blog.created_at.substr(5, 5)}</span>
+                </div>
             </div>
 
             <div className="hidden sm:block sm:basis-56">
                 <img
+                    loading={"lazy"}
                     alt="Guitar"
                     src={blog.image}
                     className="aspect-square h-full w-full object-cover"

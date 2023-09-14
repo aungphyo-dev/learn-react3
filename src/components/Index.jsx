@@ -1,32 +1,51 @@
 import {supabase} from "../supabase/index.js";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import Loading from "./Loading.jsx";
 import BlogCard from "./BlogCard.jsx";
 import {useSearchParams} from "react-router-dom";
 
 const Home = () => {
     const [searchParams, setSearchParams] = useSearchParams({});
-    console.log(searchParams)
+    const [search,setSearch] = useState(false)
     const [posts, setPosts] = useState({})
     const [query,setQuery] = useState("")
     const [isLoading, setIsLoading] = useState(true)
+    const getPost = async () => {
+        const  data  = await supabase
+            .from('blogs')
+            .select()
+            .ilike('title', `%${query}%`).order('id', {ascending: false})
+        setPosts(data)
+        setIsLoading(false)
+    }
+    const getPostAll = async () => {
+        const  data  = await supabase
+            .from('blogs')
+            .select()
+            .order('id', {ascending: false})
+        setPosts(data)
+        setIsLoading(false)
+    }
     useEffect(() => {
-        const getPost = async () => {
-            const  data  = await supabase
-                .from('blogs')
-                .select()
-                .ilike('title', `%${query}%`).order('id', {ascending: false})
-            setPosts(data)
-            setIsLoading(false)
-        }
-        setTimeout(()=>{
-            getPost()
-        },1500)
+        getPost()
+    }, []);
+    useEffect(() => {
         if (query.length === 0){
             setSearchParams({})
         }
-        return clearTimeout(()=>{})
     }, [query]);
+    const handleSubmit = (e) => {
+      e.preventDefault()
+        setSearch(true)
+        getPost()
+    }
+    const handleClick = () => {
+        setIsLoading(true)
+      setSearchParams({})
+        setSearch(false)
+        setQuery("")
+        getPostAll()
+    }
     return (
         <>
             {isLoading && <Loading/>}
@@ -37,18 +56,27 @@ const Home = () => {
                     ))}
                 </section>
                 <section className='w-full mb-5 lg:mb-0 lg:w-[30%] px-5'>
-                    <form className="flex items-center">
-                        <label htmlFor="voice-search" className="sr-only">Search</label>
-                        <div className="relative w-full">
+                    <form onSubmit={handleSubmit}>
+                        <label htmlFor="default-search" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+                        <div className="relative">
                             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 21 21">
-                                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11.15 5.6h.01m3.337 1.913h.01m-6.979 0h.01M5.541 11h.01M15 15h2.706a1.957 1.957 0 0 0 1.883-1.325A9 9 0 1 0 2.043 11.89 9.1 9.1 0 0 0 7.2 19.1a8.62 8.62 0 0 0 3.769.9A2.013 2.013 0 0 0 13 18v-.857A2.034 2.034 0 0 1 15 15Z"/>
+                                <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                    <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
                                 </svg>
                             </div>
-                            <input onChange={e=>{
-                                setSearchParams({"title":e.target.value})
+                            <input value={query} onChange={(e)=>{
+                                setSearchParams({
+                                    title : e.target.value
+                                })
                                 setQuery(e.target.value)
-                            }} type="text" id="voice-search" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search blogs..." required/>
+                            }} type="search" id="default-search" className="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search Blogs..." required/>
+                            {
+                                search ?  <button type="button" onClick={handleClick} className="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" >
+                                    <svg className="w-3 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                                    </svg>
+                                </button> : <button type="submit" className="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
+                            }
                         </div>
                     </form>
                 </section>

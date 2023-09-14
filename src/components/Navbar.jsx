@@ -28,7 +28,7 @@ function Navbar() {
         <nav className="bg-white fixed top-0 left-0 right-0 z-50 border-gray-200 dark:bg-gray-900">
             <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
                 <Link to="/" className="flex items-center">
-                    <img width="50" height="50" src="https://img.icons8.com/3d-fluency/94/mac-os.png" alt="mac-os"/>   </Link>
+                    <img width="30" height="30" src="https://img.icons8.com/3d-fluency/94/mac-os.png" alt="mac-os"/>   </Link>
                 <div className="flex items-center md:order-2">
                     <button type="button" className="flex mr-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown" data-dropdown-placement="bottom">
                         <span className="sr-only">Open user menu</span>

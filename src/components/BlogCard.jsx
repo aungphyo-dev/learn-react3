@@ -16,6 +16,7 @@ export default function BlogCard({blog}) {
 
             <div className="hidden sm:block sm:basis-56">
                 <img
+                    loading={"lazy"}
                     alt="Guitar"
                     src={blog.image}
                     className="aspect-square h-full w-full object-cover"
