@@ -99,7 +99,7 @@ const AuthForm = () => {
                                    onChange={e=>setEmail(e.target.value)}
                                 type="email"
                                 className="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm"
-                                placeholder="Enter email"
+                                placeholder="Enter email" required
                             />
                             <span className="absolute inset-y-0 end-0 grid place-content-center px-4">
             <svg
@@ -129,7 +129,7 @@ const AuthForm = () => {
                                 value={password}
                                 onChange={e=>setPassword(e.target.value)}
                                 className="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm"
-                                placeholder="Enter password"
+                                placeholder="Enter password" required
                             />
 
                             <span className="absolute inset-y-0 end-0 grid place-content-center px-4">
