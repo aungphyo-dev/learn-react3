@@ -20,7 +20,7 @@ function App() {
             }
         })
     }, []);
-    const user = localStorage.getItem("sb-guhrljahuzgrpuvbdiuf-auth-token")
+    const user = localStorage.getItem("sb-rvfstgyjufrxnaindhkb-auth-token")
   return (
                 <BrowserRouter>
                     <Navbar/>

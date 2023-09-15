@@ -4,18 +4,23 @@ import {useEffect, useState} from "react";
 
 function Navbar() {
     const [userSlug,setUserSlug] = useState("")
+    const [userInfo,setUserInfo] = useState({})
     const [user,setUser] = useState(false)
     const [open,setOpen] = useState(false)
     const nav = useNavigate()
     useEffect(() => {
-        const getSlug =async () => {
-           const {data} = await supabase.auth.getSession()
-            setUserSlug(data?.session?.user?.id)
+        const getDD = async () => {
+            const { data: { user } } = await supabase.auth.getUser()
+            setUserInfo({
+                name : user?.user_metadata?.name,
+                email : user.email
+            })
+            setUserSlug(user.id)
         }
-        getSlug()
         supabase.auth.onAuthStateChange((event, session) => {
             if (session !== null){
                 setUser(true)
+                getDD()
             }else {
                 setUser(false)
             }
@@ -27,23 +32,25 @@ function Navbar() {
     }
     return (
         <nav className="bg-white fixed top-0 left-0 right-0 z-50 border-gray-200 dark:bg-gray-900 shadow">
-            <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
+            <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto px-4 py-3">
                 <Link to="/" className="flex items-center">
-                    <img width="30" height="30" src="https://img.icons8.com/3d-fluency/94/mac-os.png" alt="mac-os"/>   </Link>
+                    <img width="30" height="30" src="https://supabase.com/dashboard/img/supabase-logo.svg" alt="mac-os"/>   </Link>
                 <div className="flex items-center relative md:order-2">
-                    <button onClick={()=>setOpen(!open)} type="button" className="flex mr-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown" data-dropdown-placement="bottom">
+                    <button onClick={()=>setOpen(!open)} type="button" className="w-8 h-8 flex mr-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown" data-dropdown-placement="bottom">
                         <span className="sr-only">Open user menu</span>
                         {user ? <img alt="Remy Sharp" src="https://img.icons8.com/?size=1x&id=20749&format=png"/> :
                             <img alt="Remy Sharp" src="https://img.icons8.com/?size=1x&id=98957&format=png"/>}
                     </button>
-                    <div className={`z-50 ${open ? "block" : "hidden"} absolute top-[1rem] right-2 w-[100px] my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600`}>
+                    <div className={`z-50 ${open ? "block" : "hidden"} absolute top-[1rem] right-2 w-64 my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600`}>
                         {
                             user && <div className="px-4 py-3">
                                 <span className="block text-sm text-gray-900 dark:text-white">
-                                    Blogger
+                                    {userInfo.name}
                                 </span>
                                 <span className="block text-sm  text-gray-500 truncate dark:text-gray-400">
-                                        {JSON.parse(localStorage.getItem("sb-guhrljahuzgrpuvbdiuf-auth-token")).user.email}
+                                        {
+                                            userInfo.email
+                                        }
                                 </span>
                             </div>
                         }

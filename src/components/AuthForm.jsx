@@ -9,16 +9,30 @@ const AuthForm = () => {
     const [isLoading, setIsLoading] = useState(false)
     const [error,setError] = useState(false)
     const nav = useNavigate()
+    const [file,setFile] = useState(null)
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true)
         if (pathname === "/signup") {
-            const {error,data} = await supabase.auth.signUp({email: email, password: password});
+            const {error} = await supabase.auth.signUp({email: email, password: password});
             setIsLoading(false)
+            nav("/")
             if (error === null) {
-                const{error} = await supabase.from("user_information").insert([{name:data.user.email.substring(0,5),user_id:data.user.id,email:data.user.email}]).select();
-                console.log(error)
-                nav("/")
+                const fileName = Date.now() + file.name
+                await supabase
+                    .storage
+                    .from('blogs')
+                    .upload(`users/${fileName}`, file, {
+                        cacheControl: '3600',
+                        upsert: true
+                    })
+                const { data } = supabase
+                    .storage
+                    .from('blogs')
+                    .getPublicUrl(`users/${fileName}`)
+                await supabase.auth.updateUser({
+                    data: { name: `users-${Date.now()}`,image :data.publicUrl }
+                })
             }else {
                 setError(true)
             }
@@ -73,6 +87,11 @@ const AuthForm = () => {
                         </div>
                     </div>
                 }
+                    {
+                        pathname === "/signup" && <div>
+                            <input type="file" onChange={e=>setFile(e.target.files[0])}  name="photo" id="photo" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required=""/>
+                        </div>
+                    }
                     <div>
                         <label htmlFor="email" className="sr-only">Email</label>
                         <div className="relative">

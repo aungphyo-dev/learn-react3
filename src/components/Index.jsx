@@ -7,7 +7,8 @@ import Button from '@mui/material/Button';
 
 const Home = () => {
     const [searchParams, setSearchParams] = useSearchParams({});
-    const [limit,setLimit] = useState(5)
+    const [index,setIndex] = useState(0)
+    const [limit,setLimit] = useState(10)
     const [search,setSearch] = useState(false)
     const [posts, setPosts] = useState({})
     const [query,setQuery] = useState("")
@@ -17,8 +18,8 @@ const Home = () => {
         setShowL(true)
         const  data  = await supabase
             .from('blogs')
-            .select(`*,user_information(*),categories(*)`)
-            .limit(limit)
+            .select(`*,categories(*)`)
+            .range(index,limit)
             .ilike('title', `%${query}%`).order('id', {ascending: false})
         setPosts(data)
         setIsLoading(false)
@@ -28,8 +29,8 @@ const Home = () => {
         setShowL(true)
         const  data  = await supabase
             .from('blogs')
-            .select(`*,user_information(*),categories(*)`)
-            .limit(limit)
+            .select(`*,categories(*)`)
+            .range(index,limit)
             .order('id', {ascending: false})
         setPosts(data)
         setIsLoading(false)
@@ -52,19 +53,14 @@ const Home = () => {
     }
     const handleClick = () => {
         setIsLoading(true)
-      setSearchParams({})
+        setSearchParams({})
         setSearch(false)
         setQuery("")
         callerPostAll()
     }
     const handleMore = () => {
-        setLimit(prevState => {
-            if (prevState > 10){
-                return prevState + 3
-            }else {
-                return prevState + 5
-            }
-        })
+        setLimit(prevState =>prevState + 10)
+        setIndex(prevState => prevState + 10)
       if (search){
           callerPost()
       }else {
@@ -74,8 +70,8 @@ const Home = () => {
     return (
         <>
             {isLoading && <Loading/>}
-            {!isLoading && <div className='flex flex-col-reverse lg:flex-row mt-5 p-5 pt-[85px]'>
-                <section className='w-full lg:w-[70%] flex flex-col justify-center items-center gap-y-5'>
+            {!isLoading && <div className='flex container mx-auto flex-col-reverse lg:flex-row mt-5 p-5 pt-[85px]'>
+                <section className='w-full lg:w-[60%] flex flex-col justify-center items-center gap-y-5'>
                     {!isLoading && posts?.data?.map((post) => (
                         <BlogCard key={post.id} blog={post}/>
                     ))}
@@ -91,8 +87,8 @@ const Home = () => {
                         </Button>
                     }
                 </section>
-                <section className='w-full mb-5 lg:mb-0 lg:w-[30%] px-0 md:px-5'>
-                    <form onSubmit={handleSubmit}>
+                <section className='w-full mb-5 lg:mb-0 lg:w-[40%] px-0 lg:px-5'>
+                    <form onSubmit={handleSubmit} className='sticky top-[85px]'>
                         <label htmlFor="default-search" className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
                         <div className="relative">
                             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">

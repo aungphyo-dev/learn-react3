@@ -4,6 +4,10 @@ import {useEffect, useState} from "react";
 import {supabase} from "../supabase/index.js";
 import SaveIcon from '@mui/icons-material/Save';
 import LoadingButton from '@mui/lab/LoadingButton';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 import {useParams} from "react-router-dom";
 
 const Form = () => {
@@ -14,6 +18,8 @@ const Form = () => {
     const [file, setFile] = useState(null)
     const [updateUrl,setUpdateUrl] = useState("")
     const [previewUrl,setPreviewUrl] = useState("")
+    const [category,setCategory] = useState("")
+    const [categories,setCategories] = useState([])
     const publish = true;
     const imagePreview = (file)=>{
         let reader = new FileReader()
@@ -33,13 +39,20 @@ const Form = () => {
         setDescription(data[0].description)
         setUpdateUrl(data[0].image)
         setPreviewUrl(data[0].image)
+        setCategory(data[0].category_id)
     }
+    const getCate =async () => {
+        const {data} = await supabase.from('categories').select(`*`)
+        setCategories(data)
+    }
+
     useEffect(() => {
         if (id){
             getPost()
         }
+        getCate()
     }, []);
-    const user_id = JSON.parse(localStorage.getItem("sb-guhrljahuzgrpuvbdiuf-auth-token")).user.id
+    const user_id = JSON.parse(localStorage.getItem("sb-rvfstgyjufrxnaindhkb-auth-token")).user.id
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsLoading(true)
@@ -128,6 +141,25 @@ const Form = () => {
                 <div className='mb-3'>
                     <TextField value={title} onChange={e => setTitle(e.target.value)} fullWidth label="Title"
                                id="title"/>
+                </div>
+                <div className="mb-3">
+                    <FormControl fullWidth>
+                        <InputLabel id="demo-simple-select-autowidth-label">Category</InputLabel>
+                        <Select
+                            labelId="demo-simple-select-autowidth-label"
+                            id="demo-simple-select-autowidth"
+                            fullWidth
+                            label="Category"
+                            value={category}
+                            onChange={e=>setCategory(e.target.value)}
+                        >
+                            {
+                                categories?.map(category => (
+                                    <MenuItem key={category.id} value={category.id}>{category.name}</MenuItem>
+                                ))
+                            }
+                        </Select>
+                    </FormControl>
                 </div>
                 <div className='mb-3'>
                     <TextField value={description} onChange={e => setDescription(e.target.value)} multiline rows={4}
