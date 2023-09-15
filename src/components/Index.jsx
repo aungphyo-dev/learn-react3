@@ -36,11 +36,11 @@ const Home = () => {
         setIsLoading(false)
         setShowL(false)
     }
-    const callerPost = useCallback(getPost,[limit,query])
-    const callerPostAll = useCallback(getPostAll,[limit])
+    const callerPost = useCallback(getPost,[index, limit, query])
+    const callerPostAll = useCallback(getPostAll,[limit,index])
     useEffect(() => {
         callerPost()
-    }, []);
+    }, [] );
     useEffect(() => {
         if (query.length === 0){
             setSearchParams({})

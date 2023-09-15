@@ -100,3 +100,4 @@ const UserModal = ({modal,setMoal}) => {
   )
 }
 export default UserModal
+
