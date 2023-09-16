@@ -18,10 +18,6 @@ const Profile = () => {
             }
         )
         .subscribe()
-    const handleLogout =async () => {
-        await supabase.auth.signOut()
-        nav("/")
-    }
     const [posts, setPosts] = useState({})
     const getPost = async () => {
         const posts = await supabase.from('blogs').select(`*`).order('id', {ascending: false}).eq("user_id",slug)
@@ -46,9 +42,8 @@ const Profile = () => {
             <div className="min-h-screen pt-[85px]">
                 <div className="border-b-2 block md:flex">
                     <div className="w-full md:w-2/5 p-4 sm:p-6 lg:p-8 bg-white shadow-md">
-                        <div className="flex justify-between mb-5">
+                        <div className="flex mb-5">
                             <span className="text-xl font-semibold block">Admin Profile</span>
-                            <button onClick={handleLogout}  className="-mt-2 text-md font-bold text-white bg-gray-700 rounded-full px-5 py-2 hover:bg-gray-800">Log Out</button>
                         </div>
                         <div>
                             <img src={user.user_metadata?.image} alt=""/>

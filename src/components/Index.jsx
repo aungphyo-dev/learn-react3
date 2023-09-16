@@ -62,6 +62,7 @@ const Home = () => {
         setQuery("")
         callerPostAll()
     }
+    console.log(index,limit)
     const handleMore = () => {
         if (search) {
             callerPost()
@@ -73,16 +74,58 @@ const Home = () => {
             setIndex(prevState => prevState + 10)
         }
     }
+    const handleLess = () => {
+        if (search) {
+            callerPost()
+            setSLimit(prevState => {
+                if (prevState > 20) {
+                    return prevState - 10
+                }else {
+                    return prevState
+                }
+            })
+            setSIndex(prevState => {
+                if (prevState > 10) {
+                    return prevState - 10
+                }else {
+                    return prevState
+                }
+            })
+        } else {
+            callerPostAll()
+            setLimit(prevState => {
+                if (prevState > 20) {
+                    return prevState - 10
+                }else {
+                    return prevState
+                }
+            })
+            setIndex(prevState => {
+                if (prevState > 10) {
+                    return prevState - 10
+                }else {
+                    return prevState
+                }
+            })
+        }
+    }
     return (<>
         {isLoading && <Loading/>}
         {!isLoading && <div className='flex container mx-auto flex-col-reverse lg:flex-row mt-5 p-5 pt-[85px]'>
             <section className='w-full lg:w-[60%] flex flex-col justify-center items-center gap-y-5'>
                 {!isLoading && posts?.data?.map((post) => (<BlogCard key={post.id} blog={post}/>))}
-                {search ? <Button onClick={handleMore} variant="contained" color="success">
-                    {showL ? "Loading.." : "Show More Filtering Result"}
-                </Button> : <Button onClick={handleMore} variant="contained" color="success">
-                    {showL ? "Loading.." : "Show More"}
-                </Button>}
+                <div className='flex justify-between items-center w-full'>
+                    {search ? <Button onClick={handleLess} variant="contained" color="success">
+                        {showL ? "Loading.." : "Prev Filtering Result"}
+                    </Button> : <Button onClick={handleLess} variant="contained" color="success">
+                        {showL ? "Loading.." : "Prev"}
+                    </Button>}
+                    {search ? <Button onClick={handleMore} variant="contained" color="success">
+                        {showL ? "Loading.." : "Next Filtering Result"}
+                    </Button> : <Button onClick={handleMore} variant="contained" color="success">
+                        {showL ? "Loading.." : "Next"}
+                    </Button>}
+                </div>
             </section>
             <section className='w-full mb-5 lg:mb-0 lg:w-[40%] px-0 lg:px-5'>
                 <form onSubmit={handleSubmit} className='sticky top-[85px]'>
