@@ -1,13 +1,12 @@
 import {useEffect, useState} from "react";
 import {supabase} from "../supabase/index.js";
-import {useNavigate, useParams} from "react-router-dom";
+import {useParams} from "react-router-dom";
 import UserBlogCard from "./UserBlogCard.jsx";
 import {createPortal} from "react-dom";
 import UserModal from "./UserModal.jsx";
 const Profile = () => {
     const {slug} = useParams()
     const [user,setUser] = useState({})
-    const nav = useNavigate()
 
     const blogs = supabase.channel('custom-all-channel')
         .on(
@@ -18,26 +17,38 @@ const Profile = () => {
             }
         )
         .subscribe()
+    const dd = supabase
+        .channel('custom-all-channel')
+        .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'blogs' },
+        (payload) => {
+            console.log('Change received!', payload)
+        }
+    )
+        .subscribe()
     const [posts, setPosts] = useState({})
     const getPost = async () => {
         const posts = await supabase.from('blogs').select(`*`).order('id', {ascending: false}).eq("user_id",slug)
         setPosts(posts)
     }
     const getUser = async () => {
-        const {data :{user},error} = await supabase.auth.getUser()
+        const {data,error} = await supabase.from("user_profiles").select().eq("user_id",slug)
         if (error === null){
-            setUser(user)
+            setUser(data[0])
         }
     }
     useEffect(() => {
         getPost()
-        getUser()
     }, [blogs]);
+    useEffect(() => {
+        getUser()
+    }, [dd]);
     const [modal,setModal] = useState(false)
     return(
         <>
             {
-                modal && createPortal(<UserModal modal={modal} setMoal={setModal}/>,document.getElementById("modal"))
+                modal && createPortal(<UserModal modal={modal} setMoal={setModal} user_id={slug}/>,document.getElementById("modal"))
             }
             <div className="min-h-screen pt-[85px]">
                 <div className="border-b-2 block md:flex">
@@ -46,7 +57,7 @@ const Profile = () => {
                             <span className="text-xl font-semibold block">Admin Profile</span>
                         </div>
                         <div>
-                            <img src={user.user_metadata?.image} alt=""/>
+                            <img src={user?.image} alt=""/>
                         </div>
                         <span className="text-gray-600">This information is secret so be careful</span>
                     </div>
@@ -56,7 +67,7 @@ const Profile = () => {
                                 <div>
                                     <label htmlFor="name" className="font-semibold text-gray-700 block pb-1">Name</label>
                                     <div className="flex">
-                                        <div  id="username" className="border-1  rounded-r px-4 py-2 w-full">{user?.user_metadata?.name}</div>
+                                        <div  id="username" className="border-1  rounded-r px-4 py-2 w-full">{user?.name}</div>
                                     </div>
                                 </div>
                                 <div>

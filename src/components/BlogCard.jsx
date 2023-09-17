@@ -4,9 +4,16 @@ import {object} from 'prop-types';
 export default function BlogCard({blog}) {
     return (
         <div key={blog.id} className="w-full flex flex-col justify-between pb-5">
-            <Link to={`/detail/${blog.id}`} className="text-gray-900 font-medium hover:text-indigo-600">
-                {blog.title}
-            </Link>
+            <div className='flex gap-x-2 justify-start items-center'>
+                <img src={blog.user_profiles.image} className='w-11 h-11 rounded-full ring-2' alt=""/>
+                <div>
+                    <Link to={`/detail/${blog.id}`} className="text-gray-900 font-medium hover:text-indigo-600">
+                        {blog.title}
+                    </Link>
+                    <br/>
+                    {blog.user_profiles.name}
+                </div>
+            </div>
             <div className="w-full flex md:flex-row flex-col gap-y-5 items-start justify-start mt-3">
                 <div className="text-sm w-full md:w-[70%] h-full">
                     <p className="text-gray-700 line-clamp-4 mb-2">

@@ -10,12 +10,14 @@ function Navbar() {
     const nav = useNavigate()
     useEffect(() => {
         const getDD = async () => {
-            const { data: { user } } = await supabase.auth.getUser()
-            setUserInfo({
-                name : user?.user_metadata?.name,
-                email : user.email
-            })
+            const { data : {user} } = await supabase.auth.getUser()
             setUserSlug(user.id)
+            const {data} = await supabase.from("user_profiles").select("*").eq('user_id',user.id)
+            setUserInfo({
+                name : data[0]?.name,
+                email : data[0]?.email,
+                image : data[0]?.image
+            })
         }
         supabase.auth.onAuthStateChange((event, session) => {
             if (session !== null){
@@ -36,10 +38,10 @@ function Navbar() {
                 <Link to="/" className="flex items-center">
                     <img width="30" height="30" src="https://supabase.com/dashboard/img/supabase-logo.svg" alt="mac-os"/>   </Link>
                 <div className="flex items-center relative md:order-2">
-                    <button onClick={()=>setOpen(!open)} type="button" className="w-8 h-8 flex mr-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600" id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown" data-dropdown-placement="bottom">
+                    <button onClick={()=>setOpen(!open)} type="button" className="w-8 h-8 overflow-hidden flex mr-3 text-sm bg-gray-800 rounded-full" id="user-menu-button">
                         <span className="sr-only">Open user menu</span>
-                        {user ? <img alt="Remy Sharp" src="https://img.icons8.com/?size=1x&id=20749&format=png"/> :
-                            <img alt="Remy Sharp" src="https://img.icons8.com/?size=1x&id=98957&format=png"/>}
+                        {user ? <img alt="dd" src={userInfo.image} className='w-full h-full rounded-full'/> :
+                            <img alt="dd" src="https://img.icons8.com/?size=1x&id=98957&format=png"/>}
                     </button>
                     <div className={`z-50 ${open ? "block" : "hidden"} absolute top-[1rem] right-2 w-64 my-4 text-base list-none bg-white divide-y divide-gray-100 rounded-lg shadow dark:bg-gray-700 dark:divide-gray-600`}>
                         {
@@ -61,7 +63,7 @@ function Navbar() {
                             </li>
                             <li>
                                 <Link to={`/profile/${userSlug}`} onClick={()=>setOpen(false)}
-                                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Dashboard</Link>
+                                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">Profile</Link>
                             </li>
                             <li>
                                 <button onClick={handleLogout}

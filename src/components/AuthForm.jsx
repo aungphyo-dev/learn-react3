@@ -6,6 +6,7 @@ const AuthForm = () => {
     const {pathname} = useLocation()
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const [name, setName] = useState("")
     const [isLoading, setIsLoading] = useState(false)
     const [error,setError] = useState(false)
     const nav = useNavigate()
@@ -14,25 +15,38 @@ const AuthForm = () => {
         e.preventDefault();
         setIsLoading(true)
         if (pathname === "/signup") {
-            const {error} = await supabase.auth.signUp({email: email, password: password});
-            setIsLoading(false)
-            nav("/")
+            const {data:user , error} = await supabase.auth.signUp({email: email, password: password});
             if (error === null) {
-                const fileName = Date.now() + file.name
-                await supabase
-                    .storage
-                    .from('blogs')
-                    .upload(`users/${fileName}`, file, {
-                        cacheControl: '3600',
-                        upsert: true
-                    })
-                const { data } = supabase
-                    .storage
-                    .from('blogs')
-                    .getPublicUrl(`users/${fileName}`)
-                await supabase.auth.updateUser({
-                    data: { name: `users-${Date.now()}`,image :data.publicUrl }
-                })
+                if (file){
+                    const fileName = Date.now() + file.name
+                    await supabase.storage.from('blogs').upload(`users/${fileName}`, file, {
+                            cacheControl: '3600',
+                            upsert: true
+                        })
+                    const { data:image } =supabase.storage.from('blogs').getPublicUrl(`users/${fileName}`)
+                    const {data,error} =await supabase.from("user_profiles").insert([{
+                        name:name,email:email,user_id:user.user.id,image:image.publicUrl
+                    }])
+                    console.log(data,error)
+                    if (error === null){
+                        setIsLoading(false)
+                        nav("/")
+                    }else {
+                        setError(true)
+                    }
+                }else {
+                    const {data,error} =await supabase.from("user_profiles").insert([{
+                        name:name,email:email,user_id:user.user.id
+                    }])
+                    console.log(data,error)
+
+                    if (error === null){
+                        setIsLoading(false)
+                        nav("/")
+                    }else {
+                        setError(true)
+                    }
+                }
             }else {
                 setError(true)
             }
@@ -49,15 +63,6 @@ const AuthForm = () => {
     return (
         <div className="mx-auto max-w-screen-xl pt-[85px] px-4 py-16 sm:px-6 lg:px-8">
             <div className="mx-auto max-w-lg">
-                <h1 className="text-center text-2xl font-bold text-indigo-600 sm:text-3xl">
-                    Get started today
-                </h1>
-
-                <p className="mx-auto mt-4 max-w-md text-center text-gray-500">
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Obcaecati sunt
-                    dolores deleniti inventore quaerat mollitia?
-                </p>
-
                 <form
                     onSubmit={handleSubmit}
                     className="mb-0 mt-6 space-y-4 rounded-lg p-4 shadow-lg sm:p-6 lg:p-8"
@@ -89,11 +94,10 @@ const AuthForm = () => {
                 }
                     {
                         pathname === "/signup" && <div>
-                            <input type="file" onChange={e=>setFile(e.target.files[0])}  name="photo" id="photo" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" required=""/>
+                            <input type="file" onChange={e=>setFile(e.target.files[0])}  name="photo" id="photo" className="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm" required=""/>
                         </div>
                     }
                     <div>
-                        <label htmlFor="email" className="sr-only">Email</label>
                         <div className="relative">
                             <input value={email}
                                    onChange={e=>setEmail(e.target.value)}
@@ -119,7 +123,11 @@ const AuthForm = () => {
           </span>
                         </div>
                     </div>
-
+                    {
+                        pathname === "/signup" && <div>
+                            <input type="text" value={name} onChange={e=>setName(e.target.value)}   className="w-full rounded-lg border-gray-200 p-4 pe-12 text-sm shadow-sm" placeholder={"Enter your name..."} required=""/>
+                        </div>
+                    }
                     <div>
                         <label htmlFor="password" className="sr-only">Password</label>
 

@@ -4,6 +4,7 @@ import Loading from "./Loading.jsx";
 import BlogCard from "./BlogCard.jsx";
 import {useSearchParams} from "react-router-dom";
 import Button from '@mui/material/Button';
+
 const Home = () => {
     const [searchParams, setSearchParams] = useSearchParams({});
     const [index, setIndex] = useState(0)
@@ -15,41 +16,41 @@ const Home = () => {
     const [query, setQuery] = useState("")
     const [isLoading, setIsLoading] = useState(true)
     const [showL, setShowL] = useState(false)
-    const callerPost = useCallback(
-        async ()=>{
-                setShowL(true)
-                const data = await supabase
-                    .from('blogs')
-                    .select(`*,categories(*)`)
-                    .range(sindex, slimit)
-                    .ilike('title', `%${query}%`).order('id', {ascending: false})
-                setPosts(data)
-                setIsLoading(false)
-                setShowL(false)
-            
-        }
-        , [sindex, slimit, query])
-    const callerPostAll = useCallback(
-        async ()=>{
-            setShowL(true)
-            const data = await supabase
-                .from('blogs')
-                .select(`*,categories(*)`)
-                .range(index, limit)
-                .order('id', {ascending: false})
-            setPosts(data)
-            setIsLoading(false)
-            setShowL(false)
-        }, [index,limit])
+    const callerPost = useCallback(async () => {
+        setShowL(true)
+        const data = await supabase
+            .from('blogs')
+            .select(`*,categories(*),user_profiles(*)`)
+            .range(sindex, slimit)
+            .ilike('title', `%${query}%`).order('id', {ascending: false})
+        setPosts(data)
+        setIsLoading(false)
+        setShowL(false)
+
+    }, [sindex, slimit, query])
+    const callerPostAll = useCallback(async () => {
+        setShowL(true)
+        const data = await supabase
+            .from('blogs')
+            .select(`*,categories(*),user_profiles(*)`)
+            .range(index, limit)
+            .order('id', {ascending: false})
+        setPosts(data)
+        setIsLoading(false)
+        setShowL(false)
+    }, [index, limit])
 
     useEffect(() => {
         callerPostAll()
     }, [callerPostAll]);
     useEffect(() => {
-            if (query.length === 0) {
-                setSearchParams({})
-            }
-        }, [query, setSearchParams]);
+        callerPost()
+    }, [callerPost]);
+    useEffect(() => {
+        if (query.length === 0) {
+            setSearchParams({})
+        }
+    }, [query, setSearchParams]);
     const handleSubmit = (e) => {
         e.preventDefault()
         setSearch(true)
@@ -62,48 +63,45 @@ const Home = () => {
         setQuery("")
         callerPostAll()
     }
-    console.log(index,limit)
+    console.log(index, limit)
+    console.log(sindex, slimit)
     const handleMore = () => {
         if (search) {
-            callerPost()
             setSLimit(prevState => prevState + 10)
             setSIndex(prevState => prevState + 10)
         } else {
-            callerPostAll()
             setLimit(prevState => prevState + 10)
             setIndex(prevState => prevState + 10)
         }
     }
     const handleLess = () => {
         if (search) {
-            callerPost()
             setSLimit(prevState => {
                 if (prevState > 20) {
                     return prevState - 10
-                }else {
+                } else {
                     return prevState
                 }
             })
             setSIndex(prevState => {
                 if (prevState > 10) {
                     return prevState - 10
-                }else {
+                } else {
                     return prevState
                 }
             })
         } else {
-            callerPostAll()
             setLimit(prevState => {
                 if (prevState > 20) {
                     return prevState - 10
-                }else {
+                } else {
                     return prevState
                 }
             })
             setIndex(prevState => {
                 if (prevState > 10) {
                     return prevState - 10
-                }else {
+                } else {
                     return prevState
                 }
             })
@@ -116,12 +114,12 @@ const Home = () => {
                 {!isLoading && posts?.data?.map((post) => (<BlogCard key={post.id} blog={post}/>))}
                 <div className='flex justify-between items-center w-full'>
                     {search ? <Button onClick={handleLess} variant="contained" color="success">
-                        {showL ? "Loading.." : "Prev Filtering Result"}
+                        {showL ? "Loading.." : "PrevF"}
                     </Button> : <Button onClick={handleLess} variant="contained" color="success">
                         {showL ? "Loading.." : "Prev"}
                     </Button>}
                     {search ? <Button onClick={handleMore} variant="contained" color="success">
-                        {showL ? "Loading.." : "Next Filtering Result"}
+                        {showL ? "Loading.." : "NextF"}
                     </Button> : <Button onClick={handleMore} variant="contained" color="success">
                         {showL ? "Loading.." : "Next"}
                     </Button>}

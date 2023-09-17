@@ -6,14 +6,9 @@ export default function UserBlogCard({blog}) {
     const [loading,setLoading] = useState(false)
     const handleDelete = async () => {
         setLoading(true)
-        await supabase
-            .from('blogs')
-            .delete()
-            .eq('id', blog.id)
-        await supabase
-            .storage
-            .from('blogs')
-            .remove([`${blog.image.substr(72)}`])
+        await supabase.from("comments").delete().eq("blog_id", blog.id);
+        await supabase.from('blogs').delete().eq('id', blog.id)
+        await supabase.storage.from('blogs').remove([`${blog.image.substr(72)}`])
         setLoading(false)
     }
     return (

@@ -1,9 +1,8 @@
 import {supabase} from "../supabase/index.js";
 import {useEffect, useState} from "react";
 
-const UserModal = ({modal,setMoal}) => {
+const UserModal = ({modal,setMoal,user_id}) => {
     const [name,setName] = useState("")
-    const [email,setEmail] = useState("")
     const [file,setFile] = useState(null)
     const [initial,setInitaial] = useState(false)
     const [wait,setWait] = useState(false)
@@ -11,47 +10,40 @@ const UserModal = ({modal,setMoal}) => {
     useEffect(() => {
         const getUser = async () => {
             setInitaial(true)
-            const {data} = await supabase.auth.getUser()
-            setName(data?.user?.user_metadata.name)
-            setEmail(data?.user?.email)
-            setUrl(data?.user?.user_metadata.image)
-            setInitaial(false)
+            const {data,error} = await supabase.from("user_profiles").select("*").eq("user_id",user_id);
+            console.log(data)
+            if (error === null){
+                setName(data[0]?.name)
+                setUrl(data[0]?.image)
+                setInitaial(false)
+            }
         }
-        if (modal){
             getUser()
-        }
     }, [modal]);
     const handleSubmit = async  (e)=>{
         setWait(true)
         e.preventDefault()
         if (file){
-            const fileName = Date.now() + file.name
-            await supabase
-                .storage
-                .from('blogs')
-                .upload(`users/${fileName}`, file, {
-                    cacheControl: '3600',
-                    upsert: true
-                })
-            const { data } = supabase
-                .storage
-                .from('blogs')
-                .getPublicUrl(`users/${fileName}`)
-            const { error } = await supabase.auth.updateUser({
-                email:email,
-                data: { name: name,image :data.publicUrl }
-            })
-            setWait(false)
-            setMoal(false)
-            console.log(error)
+            if(url === "https://rvfstgyjufrxnaindhkb.supabase.co/storage/v1/object/public/blogs/users/user.png"){
+                const fileName = Date.now() + "_" + "*" + "_" + file.name;
+                await supabase.storage.from('blogs').upload(`users/${fileName}`, file, {cacheControl: '3600', upsert: false})
+                const { data } = supabase.storage.from('blogs').getPublicUrl(`users/${fileName}`)
+                await supabase.from("user_profiles").update({name:name, image:data.publicUrl}).eq("user_id",user_id)
+                setWait(false)
+                setMoal(false)
+            }else {
+                const  d = await supabase.storage.from('blogs').upload(`${url.substr(72)}`, file, {cacheControl: '3600', upsert: true})
+                console.log(url.substr(72))
+                console.log(d)
+                const { data } = supabase.storage.from('blogs').getPublicUrl(`${url.substr(72)}`)
+                await supabase.from("user_profiles").update({name:name, image:data.publicUrl}).eq("user_id",user_id)
+                setWait(false)
+                setMoal(false)
+            }
         }else {
-            const { error } = await supabase.auth.updateUser({
-                email:email,
-                data: { name: name,image :url }
-            })
+            await supabase.from("user_profiles").update({name:name,}).eq("user_id",user_id)
             setWait(false)
             setMoal(false)
-            console.log(error)
         }
     }
   return(
@@ -82,10 +74,6 @@ const UserModal = ({modal,setMoal}) => {
                           <div>
                               <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
                               <input type="text" name="name" value={name} onChange={e=>setName(e.target.value)} id="name" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type name" required=""/>
-                          </div>
-                          <div>
-                              <label htmlFor="brand" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
-                              <input type="text" value={email} onChange={e=>setEmail(e.target.value)}  name="brand" id="brand" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type Eamil" required=""/>
                           </div>
                       </div>
                       <button type="submit" className="text-white inline-flex items-center bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
