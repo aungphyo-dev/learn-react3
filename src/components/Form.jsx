@@ -133,7 +133,7 @@ const Form = () => {
                                 <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click to upload</span> or drag and drop</p>
                                 <p className="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
                             </div>
-                            <input id="dropzone-file" type="file" onChange={e=>setFile(e.target.files[0])} className="hidden" />
+                            <input id="dropzone-file" accept="image/*" type="file" onChange={e=>setFile(e.target.files[0])} className="hidden" />
                                 <img src={previewUrl} className='absolute inset-0 z-10' alt=""/>
                         </label>
                     </div>
