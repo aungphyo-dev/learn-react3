@@ -20,7 +20,6 @@ const Form = () => {
     const [previewUrl,setPreviewUrl] = useState("")
     const [category,setCategory] = useState("")
     const [categories,setCategories] = useState([])
-    const publish = true;
     const imagePreview = (file)=>{
         let reader = new FileReader()
         reader.readAsDataURL(file)
@@ -58,7 +57,7 @@ const Form = () => {
         setIsLoading(true)
         if (id){
             if(file){
-                if (updateUrl === "https://rvfstgyjufrxnaindhkb.supabase.co/storage/v1/object/public/blogs/images/rahul-mishra-o4SzxPgMwV8-unsplash.jpg"){
+                if (updateUrl === "https://rvfstgyjufrxnaindhkb.supabase.co/storage/v1/object/public/blogs/images/douglas-lopes-ehyV_XOZ4iA-unsplash.jpg"){
                     const fileName = Date.now() + file.name;
                     const {error} = await supabase.storage.from('blogs').upload(`images/${fileName}`, file, {
                             cacheControl: '3600',
@@ -109,14 +108,14 @@ const Form = () => {
                         upsert: true
                     })
                 const { data } = supabase.storage.from('blogs').getPublicUrl(`images/${fileName}`)
-                const{error} = await supabase.from("blogs").insert([{title:title,description:description,is_published:publish,image:data.publicUrl,user_id:user_id}]).select();
+                const{error} = await supabase.from("blogs").insert([{title:title,description:description,image:data.publicUrl,user_id:user_id}]).select();
                 console.log(error)
                 setIsLoading(false)
                 setTitle("")
                 setDescription("")
                 setPreviewUrl("")
             }else {
-                const{error} = await supabase.from("blogs").insert([{title:title,description:description,is_published:publish,user_id:user_id}]).select();
+                const{error} = await supabase.from("blogs").insert([{title:title,description:description,user_id:user_id}]).select();
                 console.log(error)
                 setIsLoading(false)
                 setTitle("")

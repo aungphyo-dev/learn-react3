@@ -11,7 +11,6 @@ const UserModal = ({modal,setMoal,user_id}) => {
         const getUser = async () => {
             setInitaial(true)
             const {data,error} = await supabase.from("user_profiles").select("*").eq("user_id",user_id);
-            console.log(data)
             if (error === null){
                 setName(data[0]?.name)
                 setUrl(data[0]?.image)
