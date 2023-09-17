@@ -58,33 +58,44 @@ const Form = () => {
         setIsLoading(true)
         if (id){
             if(file){
-                const {error} = await supabase
-                    .storage
-                    .from('blogs')
-                    .update(`${updateUrl.substr(72)}`, file, {
-                        cacheControl: '3600',
-                        upsert: true
-                    })
+                if (updateUrl === "https://rvfstgyjufrxnaindhkb.supabase.co/storage/v1/object/public/blogs/images/rahul-mishra-o4SzxPgMwV8-unsplash.jpg"){
+                    const fileName = Date.now() + file.name;
+                    const {error} = await supabase.storage.from('blogs').upload(`images/${fileName}`, file, {
+                            cacheControl: '3600',
+                            upsert: false
+                        })
+                    const { data } = supabase.storage.from('blogs').getPublicUrl(`images/${fileName}`)
                     console.log(error)
-                    await supabase
-                    .from('blogs')
-                    .update({
-                        title : title,
-                        description : description
-                    })
-                    .eq('id', id)
+                    await supabase.from('blogs').update({
+                            image:data.publicUrl,
+                            title : title,
+                            description : description
+                        }).eq('id', id)
                     setIsLoading(false)
                     setTitle("")
                     setDescription("")
                     setPreviewUrl("")
+                }else {
+                    const {error} = await supabase.storage.from('blogs').update(`${updateUrl.substr(72)}`, file, {
+                            cacheControl: '3600',
+                            upsert: true
+                        })
+                    console.log(error)
+                    await supabase.from('blogs').update({
+                            title : title,
+                            description : description
+                        })
+                        .eq('id', id)
+                    setIsLoading(false)
+                    setTitle("")
+                    setDescription("")
+                    setPreviewUrl("")
+                }
             }else {
-                await supabase
-                    .from('blogs')
-                    .update({
+                await supabase.from('blogs').update({
                         title : title,
                         description : description
-                    })
-                    .eq('id', id)
+                    }).eq('id', id)
                     setIsLoading(false)
                     setTitle("")
                     setDescription("")
@@ -93,17 +104,11 @@ const Form = () => {
         }else {
             if (file){
                 const fileName = Date.now() + file.name
-                await supabase
-                    .storage
-                    .from('blogs')
-                    .upload(`images/${fileName}`, file, {
+                await supabase.storage.from('blogs').upload(`images/${fileName}`, file, {
                         cacheControl: '3600',
                         upsert: true
                     })
-                const { data } = supabase
-                    .storage
-                    .from('blogs')
-                    .getPublicUrl(`images/${fileName}`)
+                const { data } = supabase.storage.from('blogs').getPublicUrl(`images/${fileName}`)
                 const{error} = await supabase.from("blogs").insert([{title:title,description:description,is_published:publish,image:data.publicUrl,user_id:user_id}]).select();
                 console.log(error)
                 setIsLoading(false)
@@ -133,7 +138,7 @@ const Form = () => {
                                 <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click to upload</span> or drag and drop</p>
                                 <p className="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
                             </div>
-                            <input id="dropzone-file" accept="image/*" type="file" onChange={e=>setFile(e.target.files[0])} className="hidden" />
+                            <input id="dropzone-file" accept="image/jpeg,image/jpg,image/png" type="file" onChange={e=>setFile(e.target.files[0])} className="hidden" />
                                 <img src={previewUrl} className='absolute inset-0 z-10' alt=""/>
                         </label>
                     </div>

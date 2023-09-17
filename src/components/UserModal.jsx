@@ -32,7 +32,7 @@ const UserModal = ({modal,setMoal,user_id}) => {
                 setWait(false)
                 setMoal(false)
             }else {
-                const  d = await supabase.storage.from('blogs').upload(`${url.substr(72)}`, file, {cacheControl: '3600', upsert: true})
+                const  d = await supabase.storage.from('blogs').update(`${url.substr(72)}`, file, {cacheControl: '3600', upsert: true})
                 console.log(url.substr(72))
                 console.log(d)
                 const { data } = supabase.storage.from('blogs').getPublicUrl(`${url.substr(72)}`)

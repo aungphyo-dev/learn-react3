@@ -8,7 +8,9 @@ export default function UserBlogCard({blog}) {
         setLoading(true)
         await supabase.from("comments").delete().eq("blog_id", blog.id);
         await supabase.from('blogs').delete().eq('id', blog.id)
-        await supabase.storage.from('blogs').remove([`${blog.image.substr(72)}`])
+        if(blog.image !== "https://rvfstgyjufrxnaindhkb.supabase.co/storage/v1/object/public/blogs/images/rahul-mishra-o4SzxPgMwV8-unsplash.jpg"){
+            await supabase.storage.from('blogs').remove([`${blog.image.substr(72)}`])
+        }
         setLoading(false)
     }
     return (
