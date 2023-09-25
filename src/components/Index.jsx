@@ -96,14 +96,14 @@ const Home = () => {
                 if (prevState > 20) {
                     return prevState - 10
                 } else {
-                    return prevState
+                    return 10
                 }
             })
             setIndex(prevState => {
                 if (prevState > 10) {
                     return prevState - 10
                 } else {
-                    return prevState
+                    return 0
                 }
             })
         }
