@@ -83,6 +83,7 @@ const Home = () => {
                     return 10
                 }
             })
+            
             setSIndex(prevState => {
                 if (prevState > 10) {
                     return prevState - 10
