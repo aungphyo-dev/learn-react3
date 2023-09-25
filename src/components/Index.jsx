@@ -80,14 +80,14 @@ const Home = () => {
                 if (prevState > 20) {
                     return prevState - 10
                 } else {
-                    return prevState
+                    return 10
                 }
             })
             setSIndex(prevState => {
                 if (prevState > 10) {
                     return prevState - 10
                 } else {
-                    return prevState
+                    return 0
                 }
             })
         } else {
