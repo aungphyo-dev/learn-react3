@@ -3,42 +3,50 @@ import {useCallback, useEffect, useState} from "react";
 import Loading from "./Loading.jsx";
 import BlogCard from "./BlogCard.jsx";
 import {useSearchParams} from "react-router-dom";
-import Button from '@mui/material/Button';
+import {Pagination, Stack, Typography} from "@mui/material";
 
 const Home = () => {
     const [searchParams, setSearchParams] = useSearchParams({});
-    const [index, setIndex] = useState(0)
-    const [limit, setLimit] = useState(10)
-    const [sindex, setSIndex] = useState(0)
-    const [slimit, setSLimit] = useState(10)
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(10);
+    const [totalPages, setTotalPages] = useState(0);
     const [search, setSearch] = useState(false)
     const [posts, setPosts] = useState({})
     const [query, setQuery] = useState("")
     const [isLoading, setIsLoading] = useState(true)
-    const [showL, setShowL] = useState(false)
+    const handleChange = (event,value) => {
+        setCurrentPage(value);
+    };
     const callerPost = useCallback(async () => {
-        setShowL(true)
         const data = await supabase
             .from('blogs')
             .select(`*,categories(*),user_profiles(*)`)
-            .range(sindex, slimit)
+            .range((currentPage - 1) * pageSize, currentPage * pageSize - 1)
             .ilike('title', `%${query}%`).order('id', {ascending: false})
         setPosts(data)
+        const {count} = await supabase
+            .from("blogs")
+            .select("*",{count:"exact"})
+            .range((currentPage - 1) * pageSize, currentPage * pageSize - 1)
+            .ilike('title', `%${query}%`).order('id', {ascending: false})
+        setTotalPages(Math.ceil(count / pageSize));
         setIsLoading(false)
-        setShowL(false)
-
-    }, [sindex, slimit, query])
+    }, [currentPage,pageSize,query])
     const callerPostAll = useCallback(async () => {
-        setShowL(true)
         const data = await supabase
             .from('blogs')
             .select(`*,categories(*),user_profiles(*)`)
-            .range(index, limit)
+            .range((currentPage - 1) * pageSize, currentPage * pageSize - 1)
             .order('id', {ascending: false})
         setPosts(data)
+        const {count} = await supabase
+            .from("blogs")
+            .select("*",{count:"exact"})
+            .range((currentPage - 1) * pageSize, currentPage * pageSize - 1)
+            .order('id', {ascending: false})
+        setTotalPages(Math.ceil(count / pageSize));
         setIsLoading(false)
-        setShowL(false)
-    }, [index, limit])
+    }, [currentPage,pageSize])
 
     useEffect(() => {
         callerPostAll()
@@ -63,68 +71,17 @@ const Home = () => {
         setQuery("")
         callerPostAll()
     }
-    console.log(index, limit)
-    console.log(sindex, slimit)
-    const handleMore = () => {
-        if (search) {
-            setSLimit(prevState => prevState + 10)
-            setSIndex(prevState => prevState + 10)
-        } else {
-            setLimit(prevState => prevState + 10)
-            setIndex(prevState => prevState + 10)
-        }
-    }
-    const handleLess = () => {
-        if (search) {
-            setSLimit(prevState => {
-                if (prevState > 20) {
-                    return prevState - 10
-                } else {
-                    return 10
-                }
-            })
-            
-            setSIndex(prevState => {
-                if (prevState > 10) {
-                    return prevState - 10
-                } else {
-                    return 0
-                }
-            })
-        } else {
-            setLimit(prevState => {
-                if (prevState > 20) {
-                    return prevState - 10
-                } else {
-                    return 10
-                }
-            })
-            setIndex(prevState => {
-                if (prevState > 10) {
-                    return prevState - 10
-                } else {
-                    return 0
-                }
-            })
-            
-        }
-    }
+
     return (<>
         {isLoading && <Loading/>}
         {!isLoading && <div className='flex container mx-auto flex-col-reverse lg:flex-row mt-5 p-5 pt-[85px]'>
             <section className='w-full lg:w-[60%] flex flex-col justify-center items-center gap-y-5'>
                 {!isLoading && posts?.data?.map((post) => (<BlogCard key={post.id} blog={post}/>))}
-                <div className='flex justify-between items-center w-full'>
-                    {search ? <Button onClick={handleLess} variant="contained" color="success">
-                        {showL ? "Loading.." : "PrevF"}
-                    </Button> : <Button onClick={handleLess} variant="contained" color="success">
-                        {showL ? "Loading.." : "Prev"}
-                    </Button>}
-                    {search ? <Button onClick={handleMore} variant="contained" color="success">
-                        {showL ? "Loading.." : "NextF"}
-                    </Button> : <Button onClick={handleMore} variant="contained" color="success">
-                        {showL ? "Loading.." : "Next"}
-                    </Button>}
+                <div className='w-full flex justify-end items-center'>
+                    {(!isLoading && totalPages >1) && <Stack spacing={2}>
+                        <Typography>Page: {currentPage}</Typography>
+                        <Pagination   onClick={window.scroll(0,0)} count={totalPages} variant="outlined" shape="rounded" page={currentPage} onChange={handleChange}/>
+                    </Stack>}
                 </div>
             </section>
             <section className='w-full mb-5 lg:mb-0 lg:w-[40%] px-0 lg:px-5'>
